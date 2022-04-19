@@ -1,32 +1,64 @@
-public class Main {
+class Main {
     public static void main(String[] args) {
-        int tamanho = 5;
-        double tempo = 0;
-        double[] estados = new double[tamanho + 1];
+        int nAleatorios = 1000;
+        int capacidadeFila = 5;
+        double tempoGlobal = 0.0;
 
-        Rng r = new Rng(12,23,456465,65);
+        Rng r = new Rng(12, 23, 4534535, 65);
 
-        Fila fila = new Fila();
+        //G/G/1/5, chegadas entre 2..4, atendimento entre 3..5
+        //G/G/2/5, chegadas entre 2..4, atendimento entre 3..5
 
-        Escalonador escalonador = new Escalonador(tamanho);
+        // (int servidores, int capacidade, int minChegada, int maxChegada, int minServico, int maxServico)
+        Fila f1 = new Fila(1, capacidadeFila, 2, 4, 3, 5);
+//        Fila f2 = new Fila(2, 5, 2, 4, 3, 5);
 
-        escalonador.agendaChegada(2);
+//        System.out.println(f1);
+//        System.out.println(f2);
 
-        for (int i=1; i<100000; i++) {
-            escalonador.sort();
+        Escalonador esc = new Escalonador();
 
-            if (fila.getSize() < tamanho) {
-                tempo = escalonador.nextTempo();
-                estados[fila.getSize()] = tempo - escalonador.nextTempo();
-                fila.chegada();
-                escalonador.pop();
+        Evento ev = new Evento(0, 2.0);
 
-                if (fila.getSize() <= 1) {
-                    escalonador.agendaSaida(tempo + r.next());
+        esc.agendaChegada(ev);
+
+        while (true) {
+            if (nAleatorios == 0) {
+                break;
+            } else {
+                Evento proxEvento = esc.getFila().poll();
+
+                if (proxEvento.getTipo() == 0) {
+                    tempoGlobal = proxEvento.getTempo();
+                    f1.setEstado(f1.getEstadoAtualFila(), f1.getEstados()[f1.getEstadoAtualFila()] + tempoGlobal);
+
+                    if (f1.getEstadoAtualFila() < f1.getCapacidade()) {
+                        f1.chegadaCliente();
+
+                        if (f1.getEstadoAtualFila() <= 1) {
+                            esc.agendaAtendimento(tempoGlobal + r.next());
+                            nAleatorios--;
+                        }
+                    } else {
+                        f1.addPerda();
+                    }
+
+                    esc.agendaChegada(tempoGlobal + r.next());
+                    nAleatorios--;
+                } else if (proxEvento.getTipo() == 1) {
+                    tempoGlobal = proxEvento.getTempo();
+                    f1.setEstado(f1.getEstadoAtualFila(), f1.getEstados()[f1.getEstadoAtualFila()] + tempoGlobal);
+
+                    f1.saidaCliente();
+
+                    if (f1.getEstadoAtualFila() >= 1) {
+                        esc.agendaAtendimento(tempoGlobal + r.next());
+                        nAleatorios--;
+                    }
                 }
-
-                escalonador.agendaChegada(tempo + r.next());
             }
         }
+
+        System.out.println(f1);
     }
 }
