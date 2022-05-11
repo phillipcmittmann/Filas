@@ -27,4 +27,9 @@ public class Escalonador {
         Evento novoEvento = new Evento(1, tempo);
         fila.add(novoEvento);
     }
+
+    public void agendaPassagem(double tempo) {
+        Evento novoEvento = new Evento(2, tempo);
+        fila.add(novoEvento);
+    }
 }

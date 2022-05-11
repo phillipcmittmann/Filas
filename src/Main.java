@@ -28,12 +28,13 @@ class Main {
                 if (proxEvento.getTipo() == 0) {
                     tempoGlobal = proxEvento.getTempo();
                     f1.setEstado(f1.getEstadoAtualFila(), f1.getEstados()[f1.getEstadoAtualFila()] + tempoGlobal);
+                    f2.setEstado(f2.getEstadoAtualFila(), f2.getEstados()[f2.getEstadoAtualFila()] + tempoGlobal);
 
                     if (f1.getEstadoAtualFila() < f1.getCapacidade()) {
                         f1.chegadaCliente();
 
-                        if (f1.getEstadoAtualFila() <= 1) {
-                            esc.agendaAtendimento(tempoGlobal + r.next());
+                        if (f1.getEstadoAtualFila() <= f1.getServidores()) {
+                            esc.agendaPassagem(tempoGlobal + r.next());
                             nAleatorios--;
                         }
                     } else {
@@ -44,21 +45,36 @@ class Main {
                     nAleatorios--;
                 } else if (proxEvento.getTipo() == 1) {
                     tempoGlobal = proxEvento.getTempo();
+
                     f1.setEstado(f1.getEstadoAtualFila(), f1.getEstados()[f1.getEstadoAtualFila()] + tempoGlobal);
+                    f2.setEstado(f2.getEstadoAtualFila(), f2.getEstados()[f2.getEstadoAtualFila()] + tempoGlobal);
+
+                    f2.saidaCliente();
+
+                    if (f2.getEstadoAtualFila() >= f2.getServidores()) {
+                        esc.agendaAtendimento(tempoGlobal + r.next());
+                        nAleatorios--;
+                    }
+                } else if (proxEvento.getTipo() == 2) {
+                    tempoGlobal = proxEvento.getTempo();
+
+                    f1.setEstado(f1.getEstadoAtualFila(), f1.getEstados()[f1.getEstadoAtualFila()] + tempoGlobal);
+                    f2.setEstado(f2.getEstadoAtualFila(), f2.getEstados()[f2.getEstadoAtualFila()] + tempoGlobal);
 
                     f1.saidaCliente();
 
-                    f2.setEstado(f2.getEstadoAtualFila(), f2.getEstados()[f2.getEstadoAtualFila()] + tempoGlobal);
+                    if (f1.getEstadoAtualFila() >= f1.getCapacidade()) {
+                        esc.agendaPassagem(tempoGlobal + r.next());
+                        nAleatorios--;
+                    }
 
                     if (f2.getEstadoAtualFila() < f2.getCapacidade()) {
                         f2.chegadaCliente();
-                    } else {
-                        f2.addPerda();
-                    }
 
-                    if (f1.getEstadoAtualFila() >= 1) {
-                        esc.agendaAtendimento(tempoGlobal + r.next());
-                        nAleatorios--;
+                        if (f2.getEstadoAtualFila() <= f2.getServidores()) {
+                            esc.agendaAtendimento(tempoGlobal + r.next());
+                            nAleatorios--;
+                        }
                     }
                 }
             }
