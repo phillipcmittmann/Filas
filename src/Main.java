@@ -11,10 +11,7 @@ class Main {
 
         // (int servidores, int capacidade, int minChegada, int maxChegada, int minServico, int maxServico)
         Fila f1 = new Fila(1, capacidadeFila, 2, 4, 3, 5);
-//        Fila f2 = new Fila(2, 5, 2, 4, 3, 5);
-
-//        System.out.println(f1);
-//        System.out.println(f2);
+        Fila f2 = new Fila(2, 5, 2, 4, 3, 5);
 
         Escalonador esc = new Escalonador();
 
@@ -51,6 +48,14 @@ class Main {
 
                     f1.saidaCliente();
 
+                    f2.setEstado(f2.getEstadoAtualFila(), f2.getEstados()[f2.getEstadoAtualFila()] + tempoGlobal);
+
+                    if (f2.getEstadoAtualFila() < f2.getCapacidade()) {
+                        f2.chegadaCliente();
+                    } else {
+                        f2.addPerda();
+                    }
+
                     if (f1.getEstadoAtualFila() >= 1) {
                         esc.agendaAtendimento(tempoGlobal + r.next());
                         nAleatorios--;
@@ -60,5 +65,6 @@ class Main {
         }
 
         System.out.println(f1);
+        System.out.println(f2);
     }
 }
